@@ -1,24 +1,34 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
-}
-
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-
-model order {
-  orderId      String @unique @id
-  value        Float
-  creationDate DateTime @default(now())
-  updateDate   DateTime 
-  items        Json
+generator client {
+  provider = "prisma-client-js"
 }
 
+model User {
+  id       String @id @default(uuid())
+  email    String @unique
+  password String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id          String    @id @default(uuid())
+  orderId     String    @unique // Mapeia para 'numeroPedido' do JSON de entrada
+  value       Float     // Mapeia para 'valorTotal' do JSON de entrada
+  creationDate DateTime @default(now()) // Mapeia para 'dataCriacao' do JSON de entrada
+  updateDate  DateTime  @updatedAt
+  items       OrderItem[]
+}
+
+model OrderItem {
+  id          String  @id @default(uuid())
+  productId   String  // Mapeia para 'idItem' do JSON de entrada
+  quantity    Int     // Mapeia para 'quantidadeItem' do JSON de entrada
+  price       Float   // Mapeia para 'valorItem' do JSON de entrada
+  order       Order   @relation(fields: [orderId], references: [id])
+  orderId     String
+}

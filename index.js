@@ -1,33 +1,23 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient
-
-const authRoutes = require('./routes/authRoutes')
+import express from 'express';
+import authRoutes from './src/routes/authRoutes.js';
+import orderRoutes from './src/routes/orderRoutes.js';
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+
 app.use(express.json());
 
+// Rotas de Autenticação (Abertas)
+app.use('/auth', authRoutes);
 
+// Rotas de Pedidos (Protegidas)
+app.use('/order', orderRoutes);
 
+// Rota padrão
+app.get('/', (req, res) => {
+  res.json({ message: 'API Desafio Jitterbit Rodando' });
+});
 
-app.get('/order', (req, res) =>  {
-
-    res.send()
-})
-
-
-app.get('/order/list')
-
-
-app.put('/order/')
-
-app.delete('/order/')
-
-
-
-
-
-
-
-app.listen(3000, () => {
-    console.log("Servidor rodando na url: http://localhost:3000")
-})
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na url: http://localhost:${PORT}`);
+});
